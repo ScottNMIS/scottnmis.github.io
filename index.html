@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample GitHub Pages Site</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+        .content { margin-top: 20px; }
+        h1, p { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>Sample GitHub Pages Site</h1>
+    <p id="data-container">Loading data...</p>
+
+    <script>
+        window.onload = function() {
+            let xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    let xml = xhr.responseXML;
+                    let users = xml.getElementsByTagName("user");
+                    let content = `<h2>Users</h2>`;
+                    for (let i = 0; i < users.length; i++) {
+                        let user = users[i];
+                        let name = user.getElementsByTagName("name")[0].childNodes[0].nodeValue;
+                        let email = user.getElementsByTagName("email")[0].childNodes[0].nodeValue;
+                        content += `<p><strong>${name}</strong> (${email})</p>`;
+                    }
+                    document.getElementById("data-container").innerHTML = content;
+                } else if (xhr.readyState == 4 && xhr.status != 200) {
+                    document.getElementById("data-container").innerHTML = "Failed to load data.";
+                }
+            };
+            xhr.open("GET", "data.xml", true);
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
