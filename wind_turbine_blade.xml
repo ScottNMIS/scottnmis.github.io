@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<product>
+    <passportID>WTB-987654</passportID>
+    <modelNumber>WTB-Titan-X200</modelNumber>
+    <serialNumber>WTB2024-0001</serialNumber>
+    <name>Wind Turbine Blade Titan X200</name>
+    <manufactureDate>2024-04-15</manufactureDate>
+    <category>Wind Turbine Blade</category>
+    <status>Active</status>
+    <facilityID>WTB-FAC-789</facilityID>
+    <weight>15000kg</weight>
+    <manufacturedBy>EcoWind Corp.</manufacturedBy>
+    
+    <materials>
+        <material>
+            <name>Fiberglass</name>
+            <percentage>60%</percentage>
+        </material>
+        <material>
+            <name>Resin</name>
+            <percentage>30%</percentage>
+        </material>
+        <material>
+            <name>Balsa Wood</name>
+            <percentage>5%</percentage>
+        </material>
+        <material>
+            <name>Carbon Fibre</name>
+            <percentage>5%</percentage>
+        </material>
+    </materials>
+    
+    <capacity>500kW per blade</capacity>
+    <voltage>690V</voltage>
+    
+    <standards>
+        <standard>
+            <name>IEC 61400-23</name>
+            <description>Wind turbine blade structural testing</description>
+        </standard>
+        <standard>
+            <name>ISO 9001</name>
+            <description>Quality management systems</description>
+        </standard>
+        <standard>
+            <name>ISO 14001</name>
+            <description>Environmental management systems</description>
+        </standard>
+    </standards>
+    
+    <origin>Germany</origin>
+    
+    <supplyChainSteps>
+        <step>
+            <name>Raw Material Sourcing</name>
+            <location>Germany, Spain</location>
+        </step>
+        <step>
+            <name>Manufacturing</name>
+            <location>Germany</location>
+        </step>
+        <step>
+            <name>Assembly</name>
+            <location>Germany</location>
+        </step>
+        <step>
+            <name>Distribution</name>
+            <location>Europe</location>
+        </step>
+    </supplyChainSteps>
+    
+    <recyclingInfo>
+        <method>Mechanical Recycling</method>
+        <location>Germany</location>
+        <instructions>Disassemble and transport to designated recycling facility</instructions>
+    </recyclingInfo>
+    
+    <carbonEmissions>
+        <emission>
+            <phase>Manufacturing</phase>
+            <value>1200kg CO2e</value>
+        </emission>
+        <emission>
+            <phase>Transport</phase>
+            <value>200kg CO2e</value>
+        </emission>
+        <emission>
+            <phase>Installation</phase>
+            <value>150kg CO2e</value>
+        </emission>
+    </carbonEmissions>
+    
+    <otherLogo>other_logo.png</otherLogo>
+</product>

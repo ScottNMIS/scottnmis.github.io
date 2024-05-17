@@ -3,39 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sample GitHub Pages Site</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
-        .content { margin-top: 20px; }
-        h1, p { color: #333; }
-    </style>
+    <title>Digital Product Passport</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Sample GitHub Pages Site</h1>
-    <p id="data-container">Loading data...</p>
-
-    <script>
-        window.onload = function() {
-            let xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    let xml = xhr.responseXML;
-                    let users = xml.getElementsByTagName("user");
-                    let content = `<h2>Users</h2>`;
-                    for (let i = 0; i < users.length; i++) {
-                        let user = users[i];
-                        let name = user.getElementsByTagName("name")[0].childNodes[0].nodeValue;
-                        let email = user.getElementsByTagName("email")[0].childNodes[0].nodeValue;
-                        content += `<p><strong>${name}</strong> (${email})</p>`;
-                    }
-                    document.getElementById("data-container").innerHTML = content;
-                } else if (xhr.readyState == 4 && xhr.status != 200) {
-                    document.getElementById("data-container").innerHTML = "Failed to load data.";
-                }
-            };
-            xhr.open("GET", "data.xml", true);
-            xhr.send();
-        }
-    </script>
+    <div id="access-code-container">
+        <h1>Enter Access Code</h1>
+        <label for="access-code">Access Code:</label>
+        <input type="text" id="access-code" name="access-code" required>
+        <button id="access-code-button">Submit</button>
+    </div>
+    <div class="container" id="main-container" style="display:none;">
+        <div class="content">
+            <h1>Digital Product Passport</h1>
+            <div id="product-passport">
+                <div class="passport-header">
+                    <div>
+                        <p><strong>Passport ID:</strong> <span id="passport-id"></span></p>
+                        <p><strong>Model Number:</strong> <span id="model-number"></span></p>
+                        <p><strong>Serial Number:</strong> <span id="serial-number"></span></p>
+                    </div>
+                    <div class="passport-image">
+                        <img src="DPPIcon.png" alt="DPP Logo">
+                    </div>
+                    <div class="economic-operator">
+                        <img src="nmis_logo.png" alt="Economic Operator">
+                    </div>
+                    <div class="other-logo">
+                        <img id="other-logo" src="" alt="Other Logo">
+                    </div>
+                </div>
+                <div class="chatbox">
+                    <h2>Query DPP</h2>
+                    <div class="search-container">
+                        <input type="text" id="search-term" name="search-term" placeholder="Enter your query" required>
+                        <button id="search-button">Send</button>
+                    </div>
+                    <div class="response-container">
+                        <label for="api-response">Response:</label>
+                        <textarea id="api-response" rows="10" readonly></textarea>
+                    </div>
+                    <textarea id="xml-content" style="display:none;"></textarea>
+                </div>
+                <div class="tab-content-container">
+                    <div class="tabs">
+                        <button class="tab-button active" data-tab="general">General</button>
+                        <button class="tab-button" data-tab="material-composition">Material Composition</button>
+                        <button class="tab-button" data-tab="performance">Performance</button>
+                        <button class="tab-button" data-tab="compliance">Compliance</button>
+                        <button class="tab-button" data-tab="supply-chain">Supply Chain</button>
+                        <button class="tab-button" data-tab="circularity">Circularity</button>
+                        <button class="tab-button" data-tab="carbon-footprint">Carbon Footprint</button>
+                    </div>
+                    <div class="tab-content active" id="general">
+                        <h2>General</h2>
+                        <div class="data-field"><strong>Name:</strong> <span id="passport-name"></span></div>
+                        <div class="data-field"><strong>Manufactured Date:</strong> <span id="manufacture-date"></span></div>
+                        <div class="data-field"><strong>Category:</strong> <span id="category"></span></div>
+                        <div class="data-field"><strong>Status:</strong> <span id="status"></span></div>
+                        <div class="data-field"><strong>Facility ID:</strong> <span id="facility-id"></span></div>
+                        <div class="data-field"><strong>Weight:</strong> <span id="weight"></span></div>
+                        <div class="data-field"><strong>Manufactured By:</strong> <span id="manufactured-by"></span></div>
+                    </div>
+                    <div class="tab-content" id="material-composition">
+                        <h2>Material Composition</h2>
+                    </div>
+                    <div class="tab-content" id="performance">
+                        <h2>Performance</h2>
+                    </div>
+                    <div class="tab-content" id="compliance">
+                        <h2>Compliance</h2>
+                    </div>
+                    <div class="tab-content" id="supply-chain">
+                        <h2>Supply Chain</h2>
+                    </div>
+                    <div class="tab-content" id="circularity">
+                        <h2>Circularity</h2>
+                    </div>
+                    <div class="tab-content" id="carbon-footprint">
+                        <h2>Carbon Footprint</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
