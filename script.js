@@ -138,6 +138,44 @@ document.getElementById('search-button').addEventListener('click', () => {
     fetchFakeData(apiKey, searchTerm, xmlContent);
 });
 
+document.getElementById('data-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const userName = document.getElementById('user-name').value;
+    const userInput = document.getElementById('user-input').value;
+    const apiResponse = document.getElementById('api-response').value;
+
+    const data = {
+        userName,
+        userInput,
+        apiResponse,
+        timestamp: new Date().toISOString(),
+    };
+
+    try {
+        const token = await getAuthToken(); // Implement a function to get the JWT token
+        const response = await fetch('/.netlify/functions/saveData', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert('Data saved successfully');
+        } else {
+            alert('Error saving data: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error saving data');
+    }
+});
+
+
 function fetchFakeData(apiKey, searchTerm, xmlContent) {
     const prompt = `Here is the digital product passport data: ${xmlContent}. Generate a realistic output answer for the following variable: ${searchTerm}. If the data does not exist, create realistic fake data that would fit with the existing parameters.`;
     fetch('https://api.openai.com/v1/chat/completions', {
