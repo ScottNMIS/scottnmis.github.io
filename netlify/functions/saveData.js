@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 exports.handler = async (event) => {
   console.log('Event:', event);
 
-  const allowedOrigins = ['https://your-site-name.netlify.app']; // Replace with your domain
+  const allowedOrigins = ['https://nmisdigitalproductpassport.netlify.app']
   const origin = event.headers.origin;
 
   if (!allowedOrigins.includes(origin)) {
