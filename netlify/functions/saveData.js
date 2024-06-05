@@ -1,10 +1,9 @@
 const { MongoClient } = require('mongodb');
-const jwt = require('jsonwebtoken');
 
 exports.handler = async (event) => {
   console.log('Event:', event);
 
-  const allowedOrigins = ['https://nmisdigitalproductpassport.netlify.app']
+  const allowedOrigins = ['https://nmisdigitalproductpassport.netlify.app']; // Replace with your domain
   const origin = event.headers.origin;
 
   if (!allowedOrigins.includes(origin)) {
@@ -17,30 +16,22 @@ exports.handler = async (event) => {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const token = event.headers.authorization;
-
-  if (!token) {
-    console.log('No token provided');
-    return { statusCode: 401, body: 'Unauthorized' };
-  }
-
-  try {
-    jwt.verify(token, process.env.JWT_SECRET);
-  } catch (error) {
-    console.log('Token verification failed:', error);
-    return { statusCode: 403, body: 'Forbidden' };
-  }
-
   const data = JSON.parse(event.body);
   console.log('Data received:', data);
 
   const uri = process.env.MONGODB_URI;
+  console.log('MongoDB URI:', uri);
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
   try {
+    console.log('Connecting to MongoDB...');
     await client.connect();
+    console.log('Connected to MongoDB');
+    
     const database = client.db('DPPDatabase'); // Use your database name here
     const collection = database.collection('entries'); // Use your collection name here
+    
+    console.log('Inserting data into collection...');
     await collection.insertOne(data);
     console.log('Data inserted successfully');
 
@@ -49,6 +40,7 @@ exports.handler = async (event) => {
     console.error('Error inserting data:', error);
     return { statusCode: 500, body: JSON.stringify({ message: 'Internal Server Error' }) };
   } finally {
+    console.log('Closing MongoDB connection');
     await client.close();
   }
 };
