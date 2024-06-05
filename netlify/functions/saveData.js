@@ -21,7 +21,7 @@ exports.handler = async (event) => {
 
   const uri = process.env.MONGODB_URI;
   console.log('MongoDB URI:', uri);
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  const client = new MongoClient(uri);
 
   try {
     console.log('Connecting to MongoDB...');
