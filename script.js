@@ -151,8 +151,8 @@ function fetchFakeData(participantName, searchTerm, xmlContent) {
                     'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: 'gpt-4',
-                    messages: [{ role: 'system', content: 'You are a digital product passport data assistant and should only respond with realistic data that would be found in a digital product passport. If you do not know the answer, generate a realistic sounding answer based on the available information. Do not include code or tags within the response, only the response value.' }, { role: 'user', content: prompt }],
+                    model: 'gpt-4o',
+                    messages: [{ role: 'system', content: 'You are a digital product passport data assistant and should only respond with realistic data that would be found in a digital product passport. If you do not know the answer, generate a realistic sounding answer based on the available information. Do not include code or tags within the response, only the value of the requested data in the same structure as the provided data.' }, { role: 'user', content: prompt }],
                     max_tokens: 200
                 })
             })
