@@ -3,8 +3,11 @@ const { MongoClient } = require('mongodb');
 exports.handler = async (event) => {
     console.log('Event:', event);
 
+    // Log all headers
+    console.log('Headers:', event.headers);
+
     const allowedOrigins = ['https://nmisdigitalproductpassport.netlify.app'];
-    const origin = event.headers.origin;
+    const origin = event.headers.origin || event.headers.Origin; // Check for both lower and upper case
     console.log('Request origin:', origin);
 
     // Add CORS headers
@@ -23,7 +26,7 @@ exports.handler = async (event) => {
         };
     }
 
-    if (!allowedOrigins.includes(origin)) {
+    if (origin && !allowedOrigins.includes(origin)) {
         console.log('Origin not allowed:', origin);
         return { statusCode: 403, headers, body: 'Forbidden' };
     }
@@ -50,7 +53,12 @@ exports.handler = async (event) => {
         const collection = database.collection('entries'); // Use your collection name here
         
         console.log('Inserting data into collection...');
-        await collection.insertOne(data);
+        await collection.insertOne({
+            apiKey: data.apiKey,
+            searchTerm: data.searchTerm,
+            aiResponse: data.aiResponse,
+            timestamp: data.timestamp
+        });
         console.log('Data inserted successfully');
 
         return { statusCode: 200, headers, body: JSON.stringify({ message: 'Data saved successfully' }) };

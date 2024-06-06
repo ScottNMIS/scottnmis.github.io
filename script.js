@@ -141,25 +141,23 @@ document.getElementById('search-button').addEventListener('click', () => {
 document.getElementById('data-form').addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const userName = document.getElementById('user-name').value;
-    const userInput = document.getElementById('user-input').value;
-    const apiResponse = document.getElementById('api-response').value;
+    const apiKey = localStorage.getItem('apiKey');
+    const searchTerm = document.getElementById('search-term').value;
+    const aiResponse = document.getElementById('api-response').value;
 
     const data = {
-        userName,
-        userInput,
-        apiResponse,
+        apiKey,
+        searchTerm,
+        aiResponse,
         timestamp: new Date().toISOString(),
     };
 
     try {
-        const token = await getAuthToken(); // Implement a function to get the JWT token
         const response = await fetch('/.netlify/functions/saveData', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Content-Type': 'application/json'
             },
         });
 
@@ -185,7 +183,7 @@ function fetchFakeData(apiKey, searchTerm, xmlContent) {
             'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-            model: 'gpt-4o',
+            model: 'gpt-4',
             messages: [{ role: 'system', content: 'You are a digital product passport data assistant and should only respond with realistic data that would be found in a digital product passport. If you do not know the answer, generate a realistic sounding answer based on the available information. Do not include code or tags within the response, only the response value.' }, { role: 'user', content: prompt }],
             max_tokens: 200
         })
@@ -195,6 +193,13 @@ function fetchFakeData(apiKey, searchTerm, xmlContent) {
         console.log('OpenAI Response:', data);
         const responseContent = data.choices[0].message.content.trim();
         document.getElementById('api-response').textContent = responseContent;
+
+        // Update and show the data form
+        document.getElementById('user-name').value = apiKey;
+        document.getElementById('user-input').value = searchTerm;
+        document.getElementById('ai-response').value = responseContent;
+        document.getElementById('data-form').style.display = 'block';
+
         displayLoadingState(false);
     })
     .catch(error => {
