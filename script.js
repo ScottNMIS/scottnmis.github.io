@@ -11,6 +11,16 @@ function loadProductData() {
 
             const product = xmlDoc.querySelector('product');
             if (product) {
+                document.getElementById('passport-id').textContent = product.querySelector('passportID').textContent;
+                document.getElementById('model-number').textContent = product.querySelector('modelNumber').textContent;
+                document.getElementById('serial-number').textContent = product.querySelector('serialNumber').textContent;
+
+                // Set the otherLogo image source
+                const otherLogoElement = product.querySelector('otherLogo');
+                if (otherLogoElement) {
+                    document.getElementById('other-logo').src = otherLogoElement.textContent;
+                }
+
                 populateGeneralSection(product);
                 populateMaterialComposition(product);
                 populatePerformance(product);
@@ -21,7 +31,7 @@ function loadProductData() {
 
                 document.getElementById('product-passport').style.display = 'block';
                 document.querySelector('.tab-button').click();
-                
+
                 // Store the entire XML content for later use in API request
                 document.getElementById('xml-content').value = data;
             } else {
