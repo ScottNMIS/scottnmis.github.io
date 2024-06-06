@@ -81,7 +81,6 @@ function loadProductData() {
                 document.getElementById('xml-content').value = data;
             } else {
                 console.error('Product not found in XML');
-                alert('Product not found');
             }
         })
         .catch(error => {
@@ -185,17 +184,15 @@ function saveData(data) {
             'Content-Type': 'application/json'
         },
     })
-    .then(response => response.json())
-    .then(result => {
-        if (response.ok) {
-            alert('Data saved successfully');
-        } else {
-            alert('Error saving data: ' + result.message);
-        }
+    .then(response => {
+        return response.json().then(result => {
+            if (!response.ok) {
+                console.error('Error saving data: ' + result.message);
+            }
+        });
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error saving data');
     });
 }
 
