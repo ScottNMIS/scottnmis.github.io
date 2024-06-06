@@ -1,4 +1,4 @@
-window.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', () => {
     loadProductData();
 });
 
@@ -24,7 +24,7 @@ function loadProductData() {
                 document.getElementById('facility-id').textContent = product.querySelector('facilityID').textContent;
                 document.getElementById('weight').textContent = product.querySelector('weight').textContent;
                 document.getElementById('manufactured-by').textContent = product.querySelector('manufacturedBy').textContent;
-                
+
                 // Load other logo
                 document.getElementById('other-logo').src = product.querySelector('otherLogo').textContent;
 
@@ -38,7 +38,7 @@ function loadProductData() {
 
                 // Performance
                 populateTab('performance', generateDataFields(
-                    'Capacity', product.querySelector('capacity').textContent, 
+                    'Capacity', product.querySelector('capacity').textContent,
                     'Voltage', product.querySelector('voltage').textContent
                 ));
 
@@ -138,42 +138,53 @@ document.getElementById('search-button').addEventListener('click', () => {
 });
 
 function fetchFakeData(participantName, searchTerm, xmlContent) {
-    const prompt = `Here is the digital product passport data: ${xmlContent}. Generate a realistic output answer for the following variable: ${searchTerm}. If the data does not exist, create realistic fake data that would fit with the existing parameters.`;
-    fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.API_KEY}`
-        },
-        body: JSON.stringify({
-            model: 'gpt-4',
-            messages: [{ role: 'system', content: 'You are a digital product passport data assistant and should only respond with realistic data that would be found in a digital product passport. If you do not know the answer, generate a realistic sounding answer based on the available information. Do not include code or tags within the response, only the response value.' }, { role: 'user', content: prompt }],
-            max_tokens: 200
+    fetch('/.netlify/functions/getApiKey')
+        .then(response => response.json())
+        .then(apiKeyData => {
+            const apiKey = apiKeyData.apiKey;
+
+            const prompt = `Here is the digital product passport data: ${xmlContent}. Generate a realistic output answer for the following variable: ${searchTerm}. If the data does not exist, create realistic fake data that would fit with the existing parameters.`;
+            fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4',
+                    messages: [{ role: 'system', content: 'You are a digital product passport data assistant and should only respond with realistic data that would be found in a digital product passport. If you do not know the answer, generate a realistic sounding answer based on the available information. Do not include code or tags within the response, only the response value.' }, { role: 'user', content: prompt }],
+                    max_tokens: 200
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('OpenAI Response:', data);
+                const responseContent = data.choices[0].message.content.trim();
+                document.getElementById('api-response').textContent = responseContent;
+
+                // Automatically submit the data once the AI response is received
+                const dataToSave = {
+                    participantName: participantName,
+                    searchTerm: searchTerm,
+                    aiResponse: responseContent,
+                    timestamp: new Date().toISOString(),
+                };
+
+                saveData(dataToSave);
+
+                displayLoadingState(false);
+            })
+            .catch(error => {
+                console.error('Error accessing the API:', error);
+                document.getElementById('api-response').textContent = 'Error accessing the API. Please try again later.';
+                displayLoadingState(false);
+            });
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('OpenAI Response:', data);
-        const responseContent = data.choices[0].message.content.trim();
-        document.getElementById('api-response').textContent = responseContent;
-
-        // Automatically submit the data once the AI response is received
-        const dataToSave = {
-            participantName: participantName,
-            searchTerm: searchTerm,
-            aiResponse: responseContent,
-            timestamp: new Date().toISOString(),
-        };
-
-        saveData(dataToSave);
-
-        displayLoadingState(false);
-    })
-    .catch(error => {
-        console.error('Error accessing the API:', error);
-        document.getElementById('api-response').textContent = 'Error accessing the API. Please try again later.';
-        displayLoadingState(false);
-    });
+        .catch(error => {
+            console.error('Error fetching the API key:', error);
+            document.getElementById('api-response').textContent = 'Error fetching the API key. Please try again later.';
+            displayLoadingState(false);
+        });
 }
 
 function saveData(data) {
