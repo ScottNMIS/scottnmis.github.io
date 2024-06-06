@@ -115,18 +115,18 @@ document.querySelectorAll('.tab-button').forEach(button => {
 });
 
 document.getElementById('access-code-button').addEventListener('click', () => {
-    const apiKey = document.getElementById('access-code').value;
-    if (!apiKey) {
-        alert('Please enter the access code');
+    const participantName = document.getElementById('participant-name').value;
+    if (!participantName) {
+        alert('Please enter the participant name');
         return;
     }
-    localStorage.setItem('apiKey', apiKey);
+    localStorage.setItem('participantName', participantName);
     document.getElementById('access-code-container').style.display = 'none';
     document.getElementById('main-container').style.display = 'flex';
 });
 
 document.getElementById('search-button').addEventListener('click', () => {
-    const apiKey = localStorage.getItem('apiKey');
+    const participantName = localStorage.getItem('participantName');
     const searchTerm = document.getElementById('search-term').value;
     const xmlContent = document.getElementById('xml-content').value;
     if (!searchTerm) {
@@ -134,16 +134,16 @@ document.getElementById('search-button').addEventListener('click', () => {
         return;
     }
     displayLoadingState(true);
-    fetchFakeData(apiKey, searchTerm, xmlContent);
+    fetchFakeData(participantName, searchTerm, xmlContent);
 });
 
-function fetchFakeData(apiKey, searchTerm, xmlContent) {
+function fetchFakeData(participantName, searchTerm, xmlContent) {
     const prompt = `Here is the digital product passport data: ${xmlContent}. Generate a realistic output answer for the following variable: ${searchTerm}. If the data does not exist, create realistic fake data that would fit with the existing parameters.`;
     fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
+            'Authorization': `Bearer ${process.env.API_KEY}`
         },
         body: JSON.stringify({
             model: 'gpt-4',
@@ -159,7 +159,7 @@ function fetchFakeData(apiKey, searchTerm, xmlContent) {
 
         // Automatically submit the data once the AI response is received
         const dataToSave = {
-            apiKey: apiKey,
+            participantName: participantName,
             searchTerm: searchTerm,
             aiResponse: responseContent,
             timestamp: new Date().toISOString(),

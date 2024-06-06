@@ -54,7 +54,7 @@ exports.handler = async (event) => {
         
         console.log('Inserting data into collection...');
         await collection.insertOne({
-            apiKey: data.apiKey,
+            participantName: data.participantName,
             searchTerm: data.searchTerm,
             aiResponse: data.aiResponse,
             timestamp: data.timestamp
