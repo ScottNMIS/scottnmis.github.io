@@ -10,7 +10,7 @@
     <facilityID>WTB-FAC-789</facilityID>
     <weight>15000kg</weight>
     <manufacturedBy>EcoWind Corp.</manufacturedBy>
-    
+
     <materials>
         <material>
             <name>Fiberglass</name>
@@ -28,8 +28,16 @@
             <name>Carbon Fibre</name>
             <percentage>5%</percentage>
         </material>
+        <material>
+            <name>Epoxy</name>
+            <percentage>10%</percentage>
+        </material>
+        <material>
+            <name>Polyester</name>
+            <percentage>7%</percentage>
+        </material>
     </materials>
-    
+
     <capacity>500kW per blade</capacity>
     <voltage>690V</voltage>
     
@@ -45,6 +53,14 @@
         <standard>
             <name>ISO 14001</name>
             <description>Environmental management systems</description>
+        </standard>
+        <standard>
+            <name>IEC 61400-25</name>
+            <description>Communications for monitoring and control of wind power plants</description>
+        </standard>
+        <standard>
+            <name>ISO 45001</name>
+            <description>Occupational health and safety management systems</description>
         </standard>
     </standards>
     
@@ -67,6 +83,14 @@
             <name>Distribution</name>
             <location>Europe</location>
         </step>
+        <step>
+            <name>Installation</name>
+            <location>United Kingdom</location>
+        </step>
+        <step>
+            <name>Maintenance</name>
+            <location>France</location>
+        </step>
     </supplyChainSteps>
     
     <recyclingInfo>
@@ -87,6 +111,14 @@
         <emission>
             <phase>Installation</phase>
             <value>150kg CO2e</value>
+        </emission>
+        <emission>
+            <phase>Maintenance</phase>
+            <value>100kg CO2e</value>
+        </emission>
+        <emission>
+            <phase>End of Life</phase>
+            <value>300kg CO2e</value>
         </emission>
     </carbonEmissions>
     

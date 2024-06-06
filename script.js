@@ -3,80 +3,25 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadProductData() {
-    fetch('wind_turbine_blade.xml')
+    fetch('dpp.xml')
         .then(response => response.text())
         .then(data => {
-            console.log('XML Data:', data);
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(data, 'text/xml');
-            console.log('Parsed XML Document:', xmlDoc);
 
             const product = xmlDoc.querySelector('product');
             if (product) {
-                console.log('Product Found:', product);
-                document.getElementById('passport-id').textContent = product.querySelector('passportID').textContent;
-                document.getElementById('model-number').textContent = product.querySelector('modelNumber').textContent;
-                document.getElementById('serial-number').textContent = product.querySelector('serialNumber').textContent;
-                document.getElementById('passport-name').textContent = product.querySelector('name').textContent;
-                document.getElementById('manufacture-date').textContent = product.querySelector('manufactureDate').textContent;
-                document.getElementById('category').textContent = product.querySelector('category').textContent;
-                document.getElementById('status').textContent = product.querySelector('status').textContent;
-                document.getElementById('facility-id').textContent = product.querySelector('facilityID').textContent;
-                document.getElementById('weight').textContent = product.querySelector('weight').textContent;
-                document.getElementById('manufactured-by').textContent = product.querySelector('manufacturedBy').textContent;
-
-                // Load other logo
-                document.getElementById('other-logo').src = product.querySelector('otherLogo').textContent;
-
-                // Material Composition
-                const materials = product.querySelectorAll('materials material');
-                const materialFields = [];
-                materials.forEach(material => {
-                    materialFields.push(`<div class="data-field"><strong>${material.querySelector('name').textContent}:</strong> <span>${material.querySelector('percentage').textContent}</span></div>`);
-                });
-                populateTab('material-composition', materialFields.join(''));
-
-                // Performance
-                populateTab('performance', generateDataFields(
-                    'Capacity', product.querySelector('capacity').textContent,
-                    'Voltage', product.querySelector('voltage').textContent
-                ));
-
-                // Compliance
-                const standards = product.querySelectorAll('standards standard');
-                const standardFields = [];
-                standards.forEach(standard => {
-                    standardFields.push(`<div class="data-field"><strong>${standard.querySelector('name').textContent}:</strong> <span>${standard.querySelector('description').textContent}</span></div>`);
-                });
-                populateTab('compliance', standardFields.join(''));
-
-                // Supply Chain
-                const supplyChainSteps = product.querySelectorAll('supplyChainSteps step');
-                const supplyChainFields = [];
-                supplyChainSteps.forEach(step => {
-                    supplyChainFields.push(`<div class="data-field"><strong>${step.querySelector('name').textContent}:</strong> <span>${step.querySelector('location').textContent}</span></div>`);
-                });
-                populateTab('supply-chain', supplyChainFields.join(''));
-
-                // Circularity
-                const recyclingInfo = product.querySelector('recyclingInfo');
-                const recyclingFields = [];
-                recyclingFields.push(`<div class="data-field"><strong>Method:</strong> <span>${recyclingInfo.querySelector('method').textContent}</span></div>`);
-                recyclingFields.push(`<div class="data-field"><strong>Location:</strong> <span>${recyclingInfo.querySelector('location').textContent}</span></div>`);
-                recyclingFields.push(`<div class="data-field"><strong>Instructions:</strong> <span>${recyclingInfo.querySelector('instructions').textContent}</span></div>`);
-                populateTab('circularity', recyclingFields.join(''));
-
-                // Carbon Footprint
-                const emissions = product.querySelectorAll('carbonEmissions emission');
-                const emissionFields = [];
-                emissions.forEach(emission => {
-                    emissionFields.push(`<div class="data-field"><strong>${emission.querySelector('phase').textContent}:</strong> <span>${emission.querySelector('value').textContent}</span></div>`);
-                });
-                populateTab('carbon-footprint', emissionFields.join(''));
+                populateGeneralSection(product);
+                populateMaterialComposition(product);
+                populatePerformance(product);
+                populateCompliance(product);
+                populateSupplyChain(product);
+                populateCircularity(product);
+                populateCarbonFootprint(product);
 
                 document.getElementById('product-passport').style.display = 'block';
                 document.querySelector('.tab-button').click();
-
+                
                 // Store the entire XML content for later use in API request
                 document.getElementById('xml-content').value = data;
             } else {
@@ -88,20 +33,79 @@ function loadProductData() {
         });
 }
 
-function generateDataFields(...fields) {
-    const fieldsHtml = [];
-    for (let i = 0; i < fields.length; i += 2) {
-        fieldsHtml.push(`
-            <div class="data-field">
-                <strong>${fields[i]}:</strong> <span>${fields[i + 1]}</span>
-            </div>
-        `);
+function populateGeneralSection(product) {
+    const generalFields = [];
+    product.querySelectorAll(':scope > *:not(materials):not(standards):not(supplyChainSteps):not(recyclingInfo):not(carbonEmissions)').forEach(child => {
+        generalFields.push(`<div class="data-field"><strong>${capitalizeFirstLetter(child.nodeName)}:</strong> <span>${capitalizeFirstLetter(child.textContent)}</span></div>`);
+    });
+    populateTab('general', generalFields.join(''));
+}
+
+function populateMaterialComposition(product) {
+    const materials = product.querySelectorAll('materials material');
+    const materialFields = [];
+    materials.forEach(material => {
+        materialFields.push(`<div class="data-field"><strong>${capitalizeFirstLetter(material.querySelector('name').textContent)}:</strong> <span>${capitalizeFirstLetter(material.querySelector('percentage').textContent)}</span></div>`);
+    });
+    populateTab('material-composition', materialFields.join(''));
+}
+
+function populatePerformance(product) {
+    const performanceFields = [];
+    const performanceElements = ['capacity', 'voltage'];
+    performanceElements.forEach(el => {
+        const element = product.querySelector(el);
+        if (element) {
+            performanceFields.push(`<div class="data-field"><strong>${capitalizeFirstLetter(el)}:</strong> <span>${capitalizeFirstLetter(element.textContent)}</span></div>`);
+        }
+    });
+    populateTab('performance', performanceFields.join(''));
+}
+
+function populateCompliance(product) {
+    const standards = product.querySelectorAll('standards standard');
+    const complianceFields = [];
+    standards.forEach(standard => {
+        complianceFields.push(`<div class="data-field"><strong>${capitalizeFirstLetter(standard.querySelector('name').textContent)}:</strong> <span>${capitalizeFirstLetter(standard.querySelector('description').textContent)}</span></div>`);
+    });
+    populateTab('compliance', complianceFields.join(''));
+}
+
+function populateSupplyChain(product) {
+    const supplyChainSteps = product.querySelectorAll('supplyChainSteps step');
+    const supplyChainFields = [];
+    supplyChainSteps.forEach(step => {
+        supplyChainFields.push(`<div class="data-field"><strong>${capitalizeFirstLetter(step.querySelector('name').textContent)}:</strong> <span>${capitalizeFirstLetter(step.querySelector('location').textContent)}</span></div>`);
+    });
+    populateTab('supply-chain', supplyChainFields.join(''));
+}
+
+function populateCircularity(product) {
+    const recyclingInfo = product.querySelector('recyclingInfo');
+    const circularityFields = [];
+    if (recyclingInfo) {
+        recyclingInfo.querySelectorAll(':scope > *').forEach(child => {
+            circularityFields.push(`<div class="data-field"><strong>${capitalizeFirstLetter(child.nodeName)}:</strong> <span>${capitalizeFirstLetter(child.textContent)}</span></div>`);
+        });
     }
-    return fieldsHtml.join('');
+    populateTab('circularity', circularityFields.join(''));
+}
+
+function populateCarbonFootprint(product) {
+    const emissions = product.querySelectorAll('carbonEmissions emission');
+    const emissionFields = [];
+    emissions.forEach(emission => {
+        emissionFields.push(`<div class="data-field"><strong>${capitalizeFirstLetter(emission.querySelector('phase').textContent)}:</strong> <span>${capitalizeFirstLetter(emission.querySelector('value').textContent)}</span></div>`);
+    });
+    populateTab('carbon-footprint', emissionFields.join(''));
 }
 
 function populateTab(tabId, fieldsHtml) {
     document.getElementById(tabId).innerHTML = `<div class="tab-content-inner">${fieldsHtml}</div>`;
+}
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
 document.querySelectorAll('.tab-button').forEach(button => {
@@ -158,7 +162,6 @@ function fetchFakeData(participantName, searchTerm, xmlContent) {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('OpenAI Response:', data);
                 const responseContent = data.choices[0].message.content.trim();
                 document.getElementById('api-response').textContent = responseContent;
 
