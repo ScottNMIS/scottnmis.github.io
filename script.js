@@ -138,42 +138,6 @@ document.getElementById('search-button').addEventListener('click', () => {
     fetchFakeData(apiKey, searchTerm, xmlContent);
 });
 
-document.getElementById('data-form').addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    const apiKey = localStorage.getItem('apiKey');
-    const searchTerm = document.getElementById('search-term').value;
-    const aiResponse = document.getElementById('api-response').value;
-
-    const data = {
-        apiKey,
-        searchTerm,
-        aiResponse,
-        timestamp: new Date().toISOString(),
-    };
-
-    try {
-        const response = await fetch('/.netlify/functions/saveData', {
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: { 
-                'Content-Type': 'application/json'
-            },
-        });
-
-        const result = await response.json();
-        if (response.ok) {
-            alert('Data saved successfully');
-        } else {
-            alert('Error saving data: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error saving data');
-    }
-});
-
-
 function fetchFakeData(apiKey, searchTerm, xmlContent) {
     const prompt = `Here is the digital product passport data: ${xmlContent}. Generate a realistic output answer for the following variable: ${searchTerm}. If the data does not exist, create realistic fake data that would fit with the existing parameters.`;
     fetch('https://api.openai.com/v1/chat/completions', {
@@ -194,11 +158,15 @@ function fetchFakeData(apiKey, searchTerm, xmlContent) {
         const responseContent = data.choices[0].message.content.trim();
         document.getElementById('api-response').textContent = responseContent;
 
-        // Update and show the data form
-        document.getElementById('user-name').value = apiKey;
-        document.getElementById('user-input').value = searchTerm;
-        document.getElementById('ai-response').value = responseContent;
-        document.getElementById('data-form').style.display = 'block';
+        // Automatically submit the data once the AI response is received
+        const dataToSave = {
+            apiKey: apiKey,
+            searchTerm: searchTerm,
+            aiResponse: responseContent,
+            timestamp: new Date().toISOString(),
+        };
+
+        saveData(dataToSave);
 
         displayLoadingState(false);
     })
@@ -206,6 +174,28 @@ function fetchFakeData(apiKey, searchTerm, xmlContent) {
         console.error('Error accessing the API:', error);
         document.getElementById('api-response').textContent = 'Error accessing the API. Please try again later.';
         displayLoadingState(false);
+    });
+}
+
+function saveData(data) {
+    fetch('/.netlify/functions/saveData', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 
+            'Content-Type': 'application/json'
+        },
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (response.ok) {
+            alert('Data saved successfully');
+        } else {
+            alert('Error saving data: ' + result.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving data');
     });
 }
 
