@@ -85,15 +85,16 @@ h1, h2 {
 
 .passport-header div {
     flex: 1;
+    padding: 10px;
 }
 
-.passport-header img {
+.passport-image, .economic-operator, .other-logo {
+    text-align: center;
+}
+
+.passport-image img, .economic-operator img, .other-logo img {
     max-width: 100px;
     height: auto;
-}
-
-.other-logo {
-    flex: 1;
 }
 
 .tabs {
@@ -188,4 +189,112 @@ textarea {
     border-radius: 5px;
     height: 200px;
     resize: none;
+}
+
+#access-code-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background-color: #ffffff;
+}
+
+#access-code-container h1 {
+    margin-bottom: 20px;
+}
+
+#access-code-container label {
+    margin-bottom: 10px;
+}
+
+#access-code-container input {
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#access-code-container button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#access-code-container button:hover {
+    background-color: #0056b3;
+}
+
+/* Tooltip */
+.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 120px;
+    padding: 5px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+/* Header Tabs */
+header {
+    background-color: #007bff;
+    padding: 0;
+    text-align: center;
+}
+
+header ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    border-bottom: 2px solid #007bff;
+}
+
+header ul li {
+    margin: 0;
+    flex: 1;
+}
+
+header ul li a {
+    display: block;
+    padding: 15px 0;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    background-color: #007bff;
+    transition: background-color 0.3s;
+}
+
+header ul li a:hover, header ul li a.active {
+    background-color: #0056b3;
+    border-bottom: 2px solid white;
+}
+
+/* Graph Controls */
+#graph-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+#graph-controls button {
+    padding: 10px 20px;
+    margin: 0 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#graph-controls button:hover {
+    background-color: #0056b3;
 }

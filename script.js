@@ -1,26 +1,61 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadProductData();
+    setupTabs();
+
+    document.getElementById('zoom-in').addEventListener('click', () => {
+        zoom.scaleBy(d3.select("#graph svg"), 1.2);
+    });
+
+    document.getElementById('zoom-out').addEventListener('click', () => {
+        zoom.scaleBy(d3.select("#graph svg"), 0.8);
+    });
 });
 
+function setupTabs() {
+    const topTabLinks = document.querySelectorAll('.tab-link');
+    const topTabContents = document.querySelectorAll('.container.tab-content');
+
+    topTabLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            const targetTab = event.target.dataset.tab;
+
+            topTabLinks.forEach(link => link.classList.remove('active'));
+            topTabContents.forEach(content => content.style.display = 'none');
+
+            event.target.classList.add('active');
+            document.getElementById(targetTab).style.display = 'block';
+        });
+    });
+
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabId = button.getAttribute('data-tab');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+}
+
 function loadProductData() {
-    fetch('dpp.xml')
-        .then(response => response.text())
+    fetch('DigitalProductPassport.json')
+        .then(response => response.json())
         .then(data => {
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(data, 'text/xml');
-
-            const product = xmlDoc.querySelector('product');
+            const product = data;
             if (product) {
-                document.getElementById('passport-id').textContent = product.querySelector('passportID').textContent;
-                document.getElementById('model-number').textContent = product.querySelector('modelNumber').textContent;
-                document.getElementById('serial-number').textContent = product.querySelector('serialNumber').textContent;
+                document.getElementById('passport-id').textContent = product.metadata.passportIdentifier;
+                document.getElementById('model-number').textContent = product.identification.type.manufacturerPartId;
+                document.getElementById('serial-number').textContent = product.identification.serial[0].value;
 
-                // Set the otherLogo image source
-                const otherLogoElement = product.querySelector('otherLogo');
+                const otherLogoElement = "other_logo.png";  // Adjust as necessary
                 if (otherLogoElement) {
-                    document.getElementById('other-logo').src = otherLogoElement.textContent;
+                    document.getElementById('other-logo').src = otherLogoElement;
                 }
 
+                populateAllSection(product);
                 populateGeneralSection(product);
                 populateMaterialComposition(product);
                 populatePerformance(product);
@@ -30,103 +65,86 @@ function loadProductData() {
                 populateCarbonFootprint(product);
 
                 document.getElementById('product-passport').style.display = 'block';
-                document.querySelector('.tab-button').click();
+                document.querySelector('.tab-button.active').click();
 
-                // Store the entire XML content for later use in API request
-                document.getElementById('xml-content').value = data;
+                document.getElementById('xml-content').value = JSON.stringify(data, null, 2);
             } else {
-                console.error('Product not found in XML');
+                console.error('Product not found in JSON');
             }
         })
         .catch(error => {
-            console.error('Error loading XML:', error);
+            console.error('Error loading JSON:', error);
         });
+}
+
+function populateAllSection(product) {
+    const allFields = [];
+    allFields.push(`<div class="data-field"><strong>Passport ID:</strong> <span>${product.metadata.passportIdentifier}</span></div>`);
+    allFields.push(`<div class="data-field"><strong>Model Number:</strong> <span>${product.identification.type.manufacturerPartId}</span></div>`);
+    allFields.push(`<div class="data-field"><strong>Serial Number:</strong> <span>${product.identification.serial[0].value}</span></div>`);
+    allFields.push(`<div class="data-field"><strong>General Performance Class:</strong> <span>${product.characteristics.generalPerformanceClass}</span></div>`);
+    allFields.push(`<div class="data-field"><strong>Physical State:</strong> <span>${product.characteristics.physicalState}</span></div>`);
+    const materials = product.materials.materialComposition.content;
+    materials.forEach(material => {
+        allFields.push(`<div class="data-field"><strong>${material.id[0].name}:</strong> <span>${material.concentration}</span></div>`);
+    });
+    allFields.push(`<div class="data-field"><strong>Volume:</strong> <span>${product.characteristics.physicalDimension.volume.value} ${product.characteristics.physicalDimension.volume.unit}</span></div>`);
+    allFields.push(`<div class="data-field"><strong>Compliance Standard:</strong> <span>${product.identification.classification[0].classificationStandard}</span></div>`);
+    allFields.push(`<div class="data-field"><strong>Manufacturer:</strong> <span>${product.operation.manufacturer.manufacturer}</span></div>`);
+    allFields.push(`<div class="data-field"><strong>Reparability Score:</strong> <span>${product.sustainability.reparabilityScore}</span></div>`);
+    allFields.push(`<div class="data-field"><strong>Carbon Footprint:</strong> <span>${product.sustainability.productFootprint.carbon[0].value} ${product.sustainability.productFootprint.carbon[0].unit}</span></div>`);
+    populateTab('all', allFields.join(''));
 }
 
 function populateGeneralSection(product) {
     const generalFields = [];
-    product.querySelectorAll(':scope > *:not(materials):not(standards):not(supplyChainSteps):not(recyclingInfo):not(carbonEmissions)').forEach(child => {
-        generalFields.push(`<div class="data-field"><strong>${capitalizeFirstLetter(child.nodeName)}:</strong> <span>${capitalizeFirstLetter(child.textContent)}</span></div>`);
-    });
+    generalFields.push(`<div class="data-field"><strong>General Performance Class:</strong> <span>${product.characteristics.generalPerformanceClass}</span></div>`);
+    generalFields.push(`<div class="data-field"><strong>Physical State:</strong> <span>${product.characteristics.physicalState}</span></div>`);
     populateTab('general', generalFields.join(''));
 }
 
 function populateMaterialComposition(product) {
-    const materials = product.querySelectorAll('materials material');
+    const materials = product.materials.materialComposition.content;
     const materialFields = [];
     materials.forEach(material => {
-        materialFields.push(`<div class="data-field"><strong>${capitalizeFirstLetter(material.querySelector('name').textContent)}:</strong> <span>${capitalizeFirstLetter(material.querySelector('percentage').textContent)}</span></div>`);
+        materialFields.push(`<div class="data-field"><strong>${material.id[0].name}:</strong> <span>${material.concentration}</span></div>`);
     });
     populateTab('material-composition', materialFields.join(''));
 }
 
 function populatePerformance(product) {
     const performanceFields = [];
-    const performanceElements = ['capacity', 'voltage'];
-    performanceElements.forEach(el => {
-        const element = product.querySelector(el);
-        if (element) {
-            performanceFields.push(`<div class="data-field"><strong>${capitalizeFirstLetter(el)}:</strong> <span>${capitalizeFirstLetter(element.textContent)}</span></div>`);
-        }
-    });
+    performanceFields.push(`<div class="data-field"><strong>Volume:</strong> <span>${product.characteristics.physicalDimension.volume.value} ${product.characteristics.physicalDimension.volume.unit}</span></div>`);
     populateTab('performance', performanceFields.join(''));
 }
 
 function populateCompliance(product) {
-    const standards = product.querySelectorAll('standards standard');
     const complianceFields = [];
-    standards.forEach(standard => {
-        complianceFields.push(`<div class="data-field"><strong>${capitalizeFirstLetter(standard.querySelector('name').textContent)}:</strong> <span>${capitalizeFirstLetter(standard.querySelector('description').textContent)}</span></div>`);
-    });
+    complianceFields.push(`<div class="data-field"><strong>Compliance Standard:</strong> <span>${product.identification.classification[0].classificationStandard}</span></div>`);
     populateTab('compliance', complianceFields.join(''));
 }
 
 function populateSupplyChain(product) {
-    const supplyChainSteps = product.querySelectorAll('supplyChainSteps step');
     const supplyChainFields = [];
-    supplyChainSteps.forEach(step => {
-        supplyChainFields.push(`<div class="data-field"><strong>${capitalizeFirstLetter(step.querySelector('name').textContent)}:</strong> <span>${capitalizeFirstLetter(step.querySelector('location').textContent)}</span></div>`);
-    });
+    supplyChainFields.push(`<div class="data-field"><strong>Manufacturer:</strong> <span>${product.operation.manufacturer.manufacturer}</span></div>`);
     populateTab('supply-chain', supplyChainFields.join(''));
 }
 
 function populateCircularity(product) {
-    const recyclingInfo = product.querySelector('recyclingInfo');
     const circularityFields = [];
-    if (recyclingInfo) {
-        recyclingInfo.querySelectorAll(':scope > *').forEach(child => {
-            circularityFields.push(`<div class="data-field"><strong>${capitalizeFirstLetter(child.nodeName)}:</strong> <span>${capitalizeFirstLetter(child.textContent)}</span></div>`);
-        });
-    }
+    circularityFields.push(`<div class="data-field"><strong>Reparability Score:</strong> <span>${product.sustainability.reparabilityScore}</span></div>`);
     populateTab('circularity', circularityFields.join(''));
 }
 
 function populateCarbonFootprint(product) {
-    const emissions = product.querySelectorAll('carbonEmissions emission');
-    const emissionFields = [];
-    emissions.forEach(emission => {
-        emissionFields.push(`<div class="data-field"><strong>${capitalizeFirstLetter(emission.querySelector('phase').textContent)}:</strong> <span>${capitalizeFirstLetter(emission.querySelector('value').textContent)}</span></div>`);
-    });
-    populateTab('carbon-footprint', emissionFields.join(''));
+    const carbonFootprintFields = [];
+    carbonFootprintFields.push(`<div class="data-field"><strong>Carbon Footprint:</strong> <span>${product.sustainability.productFootprint.carbon[0].value} ${product.sustainability.productFootprint.carbon[0].unit}</span></div>`);
+    populateTab('carbon-footprint', carbonFootprintFields.join(''));
 }
 
 function populateTab(tabId, fieldsHtml) {
     document.getElementById(tabId).innerHTML = `<div class="tab-content-inner">${fieldsHtml}</div>`;
 }
-
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-}
-
-document.querySelectorAll('.tab-button').forEach(button => {
-    button.addEventListener('click', () => {
-        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-
-        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-        document.getElementById(button.dataset.tab).classList.add('active');
-    });
-});
 
 document.getElementById('access-code-button').addEventListener('click', () => {
     const participantName = document.getElementById('participant-name').value;
@@ -175,7 +193,6 @@ function fetchFakeData(participantName, searchTerm, xmlContent) {
                 const responseContent = data.choices[0].message.content.trim();
                 document.getElementById('api-response').textContent = responseContent;
 
-                // Automatically submit the data once the AI response is received
                 const dataToSave = {
                     participantName: participantName,
                     searchTerm: searchTerm,

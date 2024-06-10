@@ -6,94 +6,111 @@
     <title>Digital Product Passport</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://d3js.org/d3.v6.min.js"></script>
 </head>
 <body>
-    <div id="access-code-container">
-        <h1>Enter Participant Name</h1>
-        <label for="participant-name">Participant Name:</label>
-        <input type="text" id="participant-name" name="participant-name" required>
-        <button id="access-code-button">Submit</button>
-    </div>
-    <div class="container" id="main-container" style="display:none;">
-        <div class="content">
-            <h1>Digital Product Passport</h1>
-            <div id="product-passport">
-                <div class="passport-header">
-                    <div>
-                        <p><strong>Passport ID:</strong> <span id="passport-id"></span></p>
-                        <p><strong>Model Number:</strong> <span id="model-number"></span></p>
-                        <p><strong>Serial Number:</strong> <span id="serial-number"></span></p>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#" class="tab-link active" data-tab="dpp">Digital Product Passport</a></li>
+                <li><a href="#" class="tab-link" data-tab="knowledge-graph">Knowledge Graph</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container tab-content" id="dpp" style="display: block;">
+        <div id="access-code-container">
+            <h1>Enter Participant Name</h1>
+            <label for="participant-name">Participant Name:</label>
+            <input type="text" id="participant-name" name="participant-name" required>
+            <button id="access-code-button">Submit</button>
+        </div>
+        <div class="container" id="main-container" style="display:none;">
+            <div class="content">
+                <h1>Digital Product Passport</h1>
+                <div id="product-passport">
+                    <div class="passport-header">
+                        <div>
+                            <p><strong>Passport ID:</strong> <span id="passport-id"></span></p>
+                            <p><strong>Model Number:</strong> <span id="model-number"></span></p>
+                            <p><strong>Serial Number:</strong> <span id="serial-number"></span></p>
+                        </div>
+                        <div class="passport-image">
+                            <img src="DPPIcon.png" alt="DPP Logo">
+                        </div>
+                        <div class="economic-operator">
+                            <img src="nmis_logo.png" alt="Economic Operator">
+                        </div>
+                        <div class="other-logo">
+                            <img id="other-logo" src="" alt="Other Logo">
+                        </div>
                     </div>
-                    <div class="passport-image">
-                        <img src="DPPIcon.png" alt="DPP Logo">
+                    <div class="chatbox">
+                        <h2>Query DPP</h2>
+                        <div class="search-container">
+                            <input type="text" id="search-term" name="search-term" placeholder="Enter your query" required>
+                            <button id="search-button">Send</button>
+                        </div>
+                        <div class="response-container">
+                            <label for="api-response">Response:</label>
+                            <textarea id="api-response" rows="10" readonly></textarea>
+                        </div>
+                        <textarea id="xml-content" style="display:none;"></textarea>
                     </div>
-                    <div class="economic-operator">
-                        <img src="nmis_logo.png" alt="Economic Operator">
-                    </div>
-                    <div class="other-logo">
-                        <img id="other-logo" src="" alt="Other Logo">
-                    </div>
-                </div>
-                <div class="chatbox">
-                    <h2>Query DPP</h2>
-                    <div class="search-container">
-                        <input type="text" id="search-term" name="search-term" placeholder="Enter your query" required>
-                        <button id="search-button">Send</button>
-                    </div>
-                    <div class="response-container">
-                        <label for="api-response">Response:</label>
-                        <textarea id="api-response" rows="10" readonly></textarea>
-                    </div>
-                    <textarea id="xml-content" style="display:none;"></textarea>
-                </div>
-                <form id="data-form" style="display:none;">
-                    <input type="text" id="participant-name" placeholder="Participant Name" required>
-                    <input type="text" id="user-input" placeholder="Search Query" required>
-                    <textarea id="ai-response" placeholder="AI Response" required></textarea>
-                    <button type="submit">Save Data</button>
-                </form>
-                <div class="tab-content-container">
-                    <div class="tabs">
-                        <button class="tab-button active" data-tab="general">General</button>
-                        <button class="tab-button" data-tab="material-composition">Material Composition</button>
-                        <button class="tab-button" data-tab="performance">Performance</button>
-                        <button class="tab-button" data-tab="compliance">Compliance</button>
-                        <button class="tab-button" data-tab="supply-chain">Supply Chain</button>
-                        <button class="tab-button" data-tab="circularity">Circularity</button>
-                        <button class="tab-button" data-tab="carbon-footprint">Carbon Footprint</button>
-                    </div>
-                    <div class="tab-content active" id="general">
-                        <h2>General</h2>
-                        <!-- Dynamic content will be inserted here -->
-                    </div>
-                    <div class="tab-content" id="material-composition">
-                        <h2>Material Composition</h2>
-                        <!-- Dynamic content will be inserted here -->
-                    </div>
-                    <div class="tab-content" id="performance">
-                        <h2>Performance</h2>
-                        <!-- Dynamic content will be inserted here -->
-                    </div>
-                    <div class="tab-content" id="compliance">
-                        <h2>Compliance</h2>
-                        <!-- Dynamic content will be inserted here -->
-                    </div>
-                    <div class="tab-content" id="supply-chain">
-                        <h2>Supply Chain</h2>
-                        <!-- Dynamic content will be inserted here -->
-                    </div>
-                    <div class="tab-content" id="circularity">
-                        <h2>Circularity</h2>
-                        <!-- Dynamic content will be inserted here -->
-                    </div>
-                    <div class="tab-content" id="carbon-footprint">
-                        <h2>Carbon Footprint</h2>
-                        <!-- Dynamic content will be inserted here -->
+                    <form id="data-form" style="display:none;">
+                        <input type="text" id="participant-name" placeholder="Participant Name" required>
+                        <input type="text" id="user-input" placeholder="Search Query" required>
+                        <textarea id="ai-response" placeholder="AI Response" required></textarea>
+                        <button type="submit">Save Data</button>
+                    </form>
+                    <div class="tab-content-container">
+                        <div class="tabs">
+                            <button class="tab-button active" data-tab="all">All</button>
+                            <button class="tab-button" data-tab="general">General</button>
+                            <button class="tab-button" data-tab="material-composition">Material Composition</button>
+                            <button class="tab-button" data-tab="performance">Performance</button>
+                            <button class="tab-button" data-tab="compliance">Compliance</button>
+                            <button class="tab-button" data-tab="supply-chain">Supply Chain</button>
+                            <button class="tab-button" data-tab="circularity">Circularity</button>
+                            <button class="tab-button" data-tab="carbon-footprint">Carbon Footprint</button>
+                        </div>
+                        <div class="tab-content active" id="all">
+                            <h2>All Data</h2>
+                        </div>
+                        <div class="tab-content" id="general">
+                            <h2>General</h2>
+                        </div>
+                        <div class="tab-content" id="material-composition">
+                            <h2>Material Composition</h2>
+                        </div>
+                        <div class="tab-content" id="performance">
+                            <h2>Performance</h2>
+                        </div>
+                        <div class="tab-content" id="compliance">
+                            <h2>Compliance</h2>
+                        </div>
+                        <div class="tab-content" id="supply-chain">
+                            <h2>Supply Chain</h2>
+                        </div>
+                        <div class="tab-content" id="circularity">
+                            <h2>Circularity</h2>
+                        </div>
+                        <div class="tab-content" id="carbon-footprint">
+                            <h2>Carbon Footprint</h2>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="container tab-content" id="knowledge-graph" style="display: none;">
+        <h2>Knowledge Graph</h2>
+        <div id="graph-controls">
+            <button id="zoom-in">Zoom In</button>
+            <button id="zoom-out">Zoom Out</button>
+        </div>
+        <div id="graph"></div>
+    </div>
     <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
