@@ -110,12 +110,26 @@ h1, h2 {
     cursor: pointer;
     flex: 1;
     text-align: center;
+    position: relative;
 }
 
 .tab-button.active {
     background-color: #007bff;
     color: white;
     border-radius: 5px;
+}
+
+.tab-button.locked {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.tab-button.locked::before {
+    content: '🔒';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .tab-content {
