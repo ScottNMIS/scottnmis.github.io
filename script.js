@@ -148,6 +148,7 @@ document.getElementById('access-code-button').addEventListener('click', () => {
 
 document.getElementById('search-button').addEventListener('click', () => {
     const participantName = localStorage.getItem('participantName');
+    const companyName = localStorage.getItem('companyName');
     const searchTerm = document.getElementById('search-term').value;
     const xmlContent = document.getElementById('xml-content').value;
     if (!searchTerm) {
@@ -155,10 +156,10 @@ document.getElementById('search-button').addEventListener('click', () => {
         return;
     }
     displayLoadingState(true);
-    fetchFakeData(participantName, searchTerm, xmlContent);
+    fetchFakeData(participantName, companyName, searchTerm, xmlContent);
 });
 
-function fetchFakeData(participantName, searchTerm, xmlContent) {
+function fetchFakeData(participantName, companyName, searchTerm, xmlContent) {
     fetch('/.netlify/functions/getApiKey')
         .then(response => response.json())
         .then(apiKeyData => {
@@ -177,27 +178,28 @@ function fetchFakeData(participantName, searchTerm, xmlContent) {
                     max_tokens: 200
                 })
             })
-            .then(response => response.json())
-            .then(data => {
-                const responseContent = data.choices[0].message.content.trim();
-                document.getElementById('api-response').textContent = responseContent;
+                .then(response => response.json())
+                .then(data => {
+                    const responseContent = data.choices[0].message.content.trim();
+                    document.getElementById('api-response').textContent = responseContent;
 
-                const dataToSave = {
-                    participantName: participantName,
-                    searchTerm: searchTerm,
-                    aiResponse: responseContent,
-                    timestamp: new Date().toISOString(),
-                };
+                    const dataToSave = {
+                        participantName: participantName,
+                        companyName: companyName,
+                        searchTerm: searchTerm,
+                        aiResponse: responseContent,
+                        timestamp: new Date().toISOString(),
+                    };
 
-                saveData(dataToSave);
+                    saveData(dataToSave);
 
-                displayLoadingState(false);
-            })
-            .catch(error => {
-                console.error('Error accessing the API:', error);
-                document.getElementById('api-response').textContent = 'Error accessing the API. Please try again later.';
-                displayLoadingState(false);
-            });
+                    displayLoadingState(false);
+                })
+                .catch(error => {
+                    console.error('Error accessing the API:', error);
+                    document.getElementById('api-response').textContent = 'Error accessing the API. Please try again later.';
+                    displayLoadingState(false);
+                });
         })
         .catch(error => {
             console.error('Error fetching the API key:', error);
@@ -210,20 +212,20 @@ function saveData(data) {
     fetch('/.netlify/functions/saveData', {
         method: 'POST',
         body: JSON.stringify(data),
-        headers: { 
+        headers: {
             'Content-Type': 'application/json'
         },
     })
-    .then(response => {
-        return response.json().then(result => {
-            if (!response.ok) {
-                console.error('Error saving data: ' + result.message);
-            }
+        .then(response => {
+            return response.json().then(result => {
+                if (!response.ok) {
+                    console.error('Error saving data: ' + result.message);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
         });
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
 }
 
 function displayLoadingState(isLoading) {

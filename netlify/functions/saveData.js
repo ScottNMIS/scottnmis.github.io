@@ -48,10 +48,10 @@ exports.handler = async (event) => {
         console.log('Connecting to MongoDB...');
         await client.connect();
         console.log('Connected to MongoDB');
-        
+
         const database = client.db('DPPDatabase'); // Use your database name here
         const collection = database.collection('entries'); // Use your collection name here
-        
+
         console.log('Inserting data into collection...');
         await collection.insertOne({
             participantName: data.participantName,
