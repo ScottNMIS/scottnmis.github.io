@@ -55,6 +55,7 @@ exports.handler = async (event) => {
         console.log('Inserting data into collection...');
         await collection.insertOne({
             participantName: data.participantName,
+            companyName: data.companyName,
             searchTerm: data.searchTerm,
             aiResponse: data.aiResponse,
             timestamp: data.timestamp
