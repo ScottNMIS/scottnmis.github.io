@@ -131,4 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             d.fy = null;
         }
     }
+
+    // Hide the zoom buttons
+    document.getElementById('graph-controls').style.display = 'none';
 });

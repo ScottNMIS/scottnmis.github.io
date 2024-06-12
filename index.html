@@ -19,9 +19,15 @@
     </header>
     <div class="container tab-content" id="dpp" style="display: block;">
         <div id="access-code-container">
+            <img src="nmis_logo.png" alt="NMIS Logo" class="logo">
+			<p class="contact-text">
+				For any feedback, comments, or interest in collaborating on the Digital Product Passport (DPP) research and development with the National Manufacturing Institute Scotland (NMIS), please contact Dr. Scott Howie at <a href="mailto:afrc-digital@strath.ac.uk">afrc-digital@strath.ac.uk</a>.
+			</p>
             <h1>Enter Participant Name</h1>
             <label for="participant-name">Participant Name:</label>
             <input type="text" id="participant-name" name="participant-name" required>
+            <label for="company-name">Company Name:</label>
+            <input type="text" id="company-name" name="company-name" required>
             <button id="access-code-button">Submit</button>
         </div>
         <div class="container" id="main-container" style="display:none;">
@@ -29,19 +35,13 @@
                 <h1>Digital Product Passport</h1>
                 <div id="product-passport">
                     <div class="passport-header">
+                        <div class="economic-operator">
+                            <img src="nmis_logo.png" alt="Economic Operator" class="logo">
+                        </div>
                         <div>
                             <p><strong>Passport ID:</strong> <span id="passport-id"></span></p>
                             <p><strong>Model Number:</strong> <span id="model-number"></span></p>
                             <p><strong>Serial Number:</strong> <span id="serial-number"></span></p>
-                        </div>
-                        <div class="passport-image">
-                            <img src="DPPIcon.png" alt="DPP Logo">
-                        </div>
-                        <div class="economic-operator">
-                            <img src="nmis_logo.png" alt="Economic Operator">
-                        </div>
-                        <div class="other-logo">
-                            <img id="other-logo" src="" alt="Other Logo">
                         </div>
                     </div>
                     <div class="chatbox">
@@ -123,13 +123,13 @@
         </div>
     </div>
     <div class="container tab-content" id="knowledge-graph" style="display: none;">
-        <h2>Knowledge Graph</h2>
-        <div id="graph-controls">
-            <button id="zoom-in">Zoom In</button>
-            <button id="zoom-out">Zoom Out</button>
-        </div>
-        <div id="graph"></div>
+        <div id="graph" class="graph-box"></div>
     </div>
+    <footer>
+        <img src="nmis_logo.png" alt="NMIS Logo" class="footer-logo">
+        <p>Developed by the National Manufacturing Institute Scotland</p>
+        <a href="mailto:afrc-digital@strath.ac.uk" class="contact-us">Contact Us</a>
+    </footer>
     <script src="script.js"></script>
     <script src="app.js"></script>
 </body>
